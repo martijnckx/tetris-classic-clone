@@ -778,6 +778,7 @@
         document.addEventListener('touchend', handleTouchEnd, false);
         document.addEventListener( "contextmenu", function(e) { e.preventDefault(); (currentPiece); updateField(); touchhandled = true;});
         window.addEventListener("resize", resizeGame);
+        document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
 
         var xDown = null;                                                        
         var yDown = null;
