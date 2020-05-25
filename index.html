@@ -733,14 +733,12 @@
             } while (field[cells[0][0]][cells[0][1]].state === 'moving')
         }
         document.onkeyup = function(e) {
-            e.preventDefault();
             if (e.key === 'ArrowDown') {
                 holdingSoftDrop = false;
                 softDropBuffer = 0;
             }
         }
         document.onkeydown = function(e) {
-            e.preventDefault();
             e = e || window.event;
             if (e.key === 'R' || e.key === 'r') {
                 if (gameOver && canRestart) restartGame(true);
@@ -791,6 +789,7 @@
                 evt.originalEvent.touches; // jQuery
         }                                                     
         function handleTouchEnd(evt) {
+            evt.preventDefault();
             const now = (new Date()).getTime();
             if (now - touchstart < 200 && !touchhandled) {
                 touchhandled = true;
@@ -802,6 +801,7 @@
             }
         }
         function handleTouchStart(evt) {
+            evt.preventDefault();
             if (gameOver) { 
                 if (canRestart) restartGame(true);
                 return;
@@ -814,6 +814,7 @@
         };                                                
 
         function handleTouchMove(evt) {
+            evt.preventDefault();
             if ( ! xDown || ! yDown ) {
                 return;
             }
