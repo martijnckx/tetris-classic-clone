@@ -94,7 +94,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            --cell-border: 1px solid #ddd;
+            --cell-border: 1px solid #eee;
             --field-width: 10;
             --field-height: 20;
             --cell-size: 20px;
@@ -694,6 +694,7 @@
             modalElem.style.background = themeColour;
             document.body.style.background = themeColour;
             document.body.style.color = darkMode? "white" : "black";
+            gameElem.style.setProperty("--cell-border", darkMode? "1px solid #333" : "1px solid #eee");
             updateField();
         }
         function pieceCanRotate(cells, rotationDirection) {
@@ -1271,6 +1272,7 @@
         const darkElem = document.getElementById('dark');
         const modalElem = document.getElementById('help-modal');
         const modalContainerElem = document.getElementById('help-modal-elem');
+        gameElem = document.getElementById("game");
         modalContainerElem.addEventListener('click', toggleHelp, false);
         modalContainerElem.addEventListener('touchstart', toggleHelp, false);
         darkElem.addEventListener('click', toggleDark, false);
