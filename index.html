@@ -51,6 +51,33 @@
             justify-content: center;
             align-items: center;
         }
+        .help-modal-container {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: -9999px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .help-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #666;
+        }
+        .help-modal .title {
+            margin: 15px 0;
+            font-size: 32px;
+            font-size: bold;
+        }
+        .help-modal .subtitle {
+            margin: 10px 0;
+            font-size: 22px;
+            font-size: bold;
+        }
         .game {
             margin-top: -25px;
             position: relative;
@@ -377,6 +404,7 @@
                 pause = false;
                 gameElem.classList.remove("game-over");
                 gameElem.classList.remove("paused");
+                modalContainerElem.style.left = "-9999px"; 
                 field = [];
                 for (let i = 0; i < rows + topBuffer; i++) {
                     field.push([]);
@@ -736,6 +764,15 @@
             }
             insertPiece(pieceName, rotation, id, center)
         }
+        function toggleHelp() {
+            modalContainerElem.style.left = modalContainerElem.style.left === "0px" ? "-9999px" : "0px";
+            const shouldPause = modalContainerElem.style.left === "0px";
+            console.log("(Un)paused");
+            pause = shouldPause;
+            if (!gameElem) gameElem = document.getElementById("game");
+            if (pause) gameElem.classList.add("paused");
+            else gameElem.classList.remove("paused");
+        }
         function advanceField() {
             if (pause) return;
             let handledPieces = [];
@@ -791,10 +828,11 @@
                 zoomLevel = Math.min(1.0, zoomLevel);
                 resizeGame();
             } else if (e.key === '0') {
-                advancePiece(currentPiece, "rrotate"); updateField();
+                // advancePiece(currentPiece, "rrotate"); updateField();
             } else if (e.key === ' ') {
                 dropPiece(currentPiece); updateField();
             } else if (e.key === 'Escape') {
+                modalContainerElem.style.left = "-9999px"; 
                 console.log("(Un)paused");
                 pause = !pause;
                 if (!gameElem) gameElem = document.getElementById("game");
@@ -802,12 +840,9 @@
                 else gameElem.classList.remove("paused");
             }
         }
-        document.addEventListener('touchstart', handleTouchStart, false);        
-        document.addEventListener('touchmove', handleTouchMove, false);
-        document.addEventListener('touchend', handleTouchEnd, false);
+
         document.addEventListener( "contextmenu", function(e) { e.preventDefault(); (currentPiece); updateField(); touchhandled = true;});
         window.addEventListener("resize", resizeGame);
-        document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
 
         var xDown = null;                                                        
         var yDown = null;
@@ -842,6 +877,7 @@
                 if (!gameElem) gameElem = document.getElementById("game");
                 if (pause) gameElem.classList.add("paused");
                 else gameElem.classList.remove("paused");
+                modalContainerElem.style.left = "-9999px"; 
                 return;
             }
             touchhandled = false;
@@ -904,6 +940,7 @@
                 if (!gameElem) gameElem = document.getElementById("game");
                 if (pause) gameElem.classList.add("paused");
                 else gameElem.classList.remove("paused");
+                modalContainerElem.style.left = "-9999px"; 
             }
         }
 
@@ -924,11 +961,35 @@
     </script>
 </head>
 <body>
+    <div class="help-modal-container" id="help-modal-elem">
+        <div class="help-modal">
+            <div class="title">Controls</div>
+            <div class="subtitle">Desktop</div>
+            <ul>
+                <li>Arrow Left/Right: Move</li>
+                <li>Arrow Up: Rotate CW</li>
+                <li>Arrow Down: Soft drop</li>
+                <li>Space: Hard drop</li>
+                <li>Escape: (Un)pause</li>
+                <li>R: Restart (when paused or game over)</li>
+            </ul>
+            <div class="subtitle">Mobile</div>
+            <ul>
+                <li>Swipe Left/Right: Move</li>
+                <li>Swipe Down: Soft drop</li>
+                <li>Swipe Up: Hard drop</li>
+                <li>Tap+Hold+Release: Hard drop</li>
+                <li>Tap: Rotate CW</li>
+                <li>Tap: Resume (when paused)</li>
+                <li>Tap: Restart (when game over)</li>
+            </ul>
+        </div>
+    </div>
     <div class="container">
         <div class="game" id="game">
             <div class="level">Level: <span id="level">1</span></div>
             <div class="score">Score: <span id="score">0</span></div>
-            <div class="field">
+            <div class="field" id="field">
                 <div class="row">
                     <div class="cell"></div>
                     <div class="cell"></div>
@@ -1172,11 +1233,22 @@
             </div>
         </div>
     </div>
-    <div class="help">?</div>
+    <div class="help" id="help">?</div>
     <div class="footer">
         Tetris (Classic) clone by <a href="https://martijnluyckx.be/">Martijn Luyckx</a>
     </div>
     <script>
+        const fieldElem = document.getElementById('field');
+        const helpElem = document.getElementById('help');
+        const modalContainerElem = document.getElementById('help-modal-elem');
+        modalContainerElem.addEventListener('click', toggleHelp, false);
+        modalContainerElem.addEventListener('touchstart', toggleHelp, false);
+        helpElem.addEventListener('click', toggleHelp, false);
+        helpElem.addEventListener('touchstart', toggleHelp, false);
+        fieldElem.addEventListener('touchstart', handleTouchStart, false);        
+        fieldElem.addEventListener('touchmove', handleTouchMove, false);
+        document.addEventListener('touchend', handleTouchEnd, false);
+        document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
         resizeGame();
         restartGame(true);
     </script>
