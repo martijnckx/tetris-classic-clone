@@ -125,6 +125,8 @@
         let level = 1;
         let pause = false;
         let gameOver = false;
+        let canRestart = true;
+        let canRestartTimeout = undefined;
         let currentPiece = "";
         let linesCleared = 0;
         let score = 0;
@@ -326,6 +328,7 @@
             }
             currentPiece = "";
             if (userWantsToRestartGame) {
+                if (!canRestart) return;
                 gameOver = false;
                 pause = false;
                 gameElem.classList.remove("game-over");
@@ -361,7 +364,17 @@
                             place_piece_audio.play();
                         }
                     }
-                    if (gameOver = isGameOver()) restartGame();
+                    if (gameOver = isGameOver()) {
+                        canRestart = false;
+                        if (!canRestartTimeout) {
+                            canRestartTimeout = setTimeout(function() {
+                                canRestart = true;
+                                clearTimeout(canRestartTimeout);
+                                canRestartTimeout = undefined;
+                            }, 2000);
+                        }
+                        restartGame();
+                    }
                     else {
                         removeFullLines();
                         insertRandomPiece();
@@ -701,7 +714,10 @@
             } while (field[cells[0][0]][cells[0][1]].state === 'moving')
         }
         document.onkeydown = function(e) {
-            if (gameOver) {restartGame(true); return;}
+            if (gameOver) { 
+                if (canRestart) restartGame(true);
+                return;
+            }
             e = e || window.event;
             if (e.key === 'ArrowLeft') {
                 advancePiece(currentPiece, "left"); updateField();
@@ -758,7 +774,10 @@
             }
         }
         function handleTouchStart(evt) {
-            if (gameOver) {restartGame(true); return;}
+            if (gameOver) { 
+                if (canRestart) restartGame(true);
+                return;
+            }
             touchhandled = false;
             touchstart = (new Date()).getTime();
             const firstTouch = getTouches(evt)[0];                                      
