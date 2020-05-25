@@ -120,6 +120,7 @@
         const maxLevel = 9;
         const linesPerLevel = 10;
         let holdingSoftDrop = false;
+        let gameloop = undefined;
         let zoomLevel = 1;
         let combo = 0;
         let backToBack = false;
@@ -259,6 +260,7 @@
                 linesCleared = 0;
                 score = 0;
                 level = 1;
+                setGameLoop();
             }
             else {
                 const prevBackToBack = backToBack;
@@ -273,7 +275,11 @@
                     scored *= 1.5;
                 }
                 score += scored;
+                const prevLevel = level;
                 level = Math.min(Math.floor(linesCleared/linesPerLevel+1), maxLevel);
+                if (prevLevel !== level) {
+                    setGameLoop();
+                }
             }
             updateScoreField();
         }
@@ -730,7 +736,6 @@
             if (e.key === 'ArrowDown') {
                 holdingSoftDrop = false;
                 softDropBuffer = 0;
-                console.log("No longer soft dropping");
             }
         }
         document.onkeydown = function(e) {
@@ -745,7 +750,6 @@
             } else if (e.key === 'ArrowRight') {
                 advancePiece(currentPiece, "right"); updateField();
             } else if (e.key === 'ArrowDown') {
-                console.log("Soft dropping");
                 softDropBuffer += 1;
                 advancePiece(currentPiece, "down"); updateField();
             } else if (e.key === 'ArrowUp') {
@@ -841,7 +845,13 @@
             xDown = null;
             yDown = null;                                             
         };
-        setInterval(advanceField, 50+((maxLevel-level)*100));
+        function setGameLoop() {
+            if (gameloop) {
+                clearInterval(gameloop);
+            }
+            gameloop = setInterval(advanceField, 50+((maxLevel-level)*100));
+        }
+        setGameLoop();
     </script>
 </head>
 <body>
