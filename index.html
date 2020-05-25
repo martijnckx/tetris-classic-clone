@@ -700,7 +700,7 @@
             } while (field[cells[0][0]][cells[0][1]].state === 'moving')
         }
         document.onkeydown = function(e) {
-            if (gameOver) restartGame(true);
+            if (gameOver) {restartGame(true); return;}
             e = e || window.event;
             if (e.key === 'ArrowLeft') {
                 advancePiece(currentPiece, "left"); updateField();
@@ -757,7 +757,7 @@
             }
         }
         function handleTouchStart(evt) {
-            if (gameOver) restartGame(true);
+            if (gameOver) {restartGame(true); return;}
             touchhandled = false;
             touchstart = (new Date()).getTime();
             const firstTouch = getTouches(evt)[0];                                      
