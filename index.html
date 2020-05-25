@@ -832,6 +832,13 @@
         }
         function handleTouchStart(evt) {
             evt.preventDefault();
+            if (pause) {
+                console.log("(Un)paused");
+                pause = !pause;
+                if (!gameElem) gameElem = document.getElementById("game");
+                if (pause) gameElem.classList.add("paused");
+                else gameElem.classList.remove("paused");
+            }
             if (gameOver) { 
                 if (canRestart) restartGame(true);
                 return;
