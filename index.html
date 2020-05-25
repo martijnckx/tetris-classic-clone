@@ -119,6 +119,7 @@
         const columns = 10;
         const maxLevel = 9;
         const linesPerLevel = 10;
+        let holdingSoftDrop = false;
         let zoomLevel = 1;
         let combo = 0;
         let backToBack = false;
@@ -241,7 +242,18 @@
                 }
             }
         }
-        function addScore(lines) {
+        function updateScoreField() {
+            if (!levelElem) levelElem = document.getElementById("level");
+            if (!scoreElem) scoreElem = document.getElementById("score");
+            scoreElem.innerText = score;
+            levelElem.innerText = level;
+        }
+        function addDropScore() {
+            score += softDropBuffer;
+            softDropBuffer = 0;
+            updateScoreField();
+        }
+        function addScoreForLines(lines) {
             if (lines <= 0 || lines > 4) return;
             if (lines === undefined) {
                 linesCleared = 0;
@@ -263,15 +275,12 @@
                 score += scored;
                 level = Math.min(Math.floor(linesCleared/linesPerLevel+1), maxLevel);
             }
-            if (!levelElem) levelElem = document.getElementById("level");
-            if (!scoreElem) scoreElem = document.getElementById("score");
-            scoreElem.innerText = score;
-            levelElem.innerText = level;
+            updateScoreField();
         }
         function removeFullLines() {
             if (pause) return;
             let lines = getFullLines();
-            addScore(lines.length);
+            addScoreForLines(lines.length);
             if (!!lines.length) combo += 1;
             else combo = 0;
             if (lines.length > 0) {
@@ -339,7 +348,7 @@
                         field[i].push({});
                     }
                 }
-                addScore(); // no argument = reset
+                addScoreForLines(); // no argument = reset
                 insertRandomPiece();
             }
         }
@@ -364,6 +373,7 @@
                             place_piece_audio.play();
                         }
                     }
+                    addDropScore();
                     if (gameOver = isGameOver()) {
                         canRestart = false;
                         if (!canRestartTimeout) {
@@ -707,13 +717,24 @@
         function dropPiece(id) {
             if (pause) return;
             let cells;
+            softDropBuffer = 0;
             do {
+                softDropBuffer += 1;
                 advancePiece(id, "down");
                 cells = getCellsOfPiece(id);
                 if (!cells || !cells[0]) break;
             } while (field[cells[0][0]][cells[0][1]].state === 'moving')
         }
+        document.onkeyup = function(e) {
+            e.preventDefault();
+            if (e.key === 'ArrowDown') {
+                holdingSoftDrop = false;
+                softDropBuffer = 0;
+                console.log("No longer soft dropping");
+            }
+        }
         document.onkeydown = function(e) {
+            e.preventDefault();
             if (gameOver) { 
                 if (canRestart) restartGame(true);
                 return;
@@ -724,6 +745,8 @@
             } else if (e.key === 'ArrowRight') {
                 advancePiece(currentPiece, "right"); updateField();
             } else if (e.key === 'ArrowDown') {
+                console.log("Soft dropping");
+                softDropBuffer += 1;
                 advancePiece(currentPiece, "down"); updateField();
             } else if (e.key === 'ArrowUp') {
                 advancePiece(currentPiece, "rotate"); updateField();
@@ -809,6 +832,7 @@
                     advancePiece(currentPiece, "rrotate"); updateField();
                     touchhandled = true;
                 } else { 
+                    softDropBuffer += 1;
                     advancePiece(currentPiece, "down"); updateField();
                     touchhandled = true;
                 }                                                                 
