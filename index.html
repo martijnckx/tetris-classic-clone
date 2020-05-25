@@ -66,7 +66,7 @@
             z-index: 2;
         }
         .game.game-over::after {
-            content: "Press any key or tap the screen to continue";
+            content: "Press R or tap the screen to continue";
             font-weight: normal;
             font-size: 12px;
             top: 230px;
@@ -347,6 +347,7 @@
                 gameOver = false;
                 pause = false;
                 gameElem.classList.remove("game-over");
+                gameElem.classList.remove("paused");
                 field = [];
                 for (let i = 0; i < rows + topBuffer; i++) {
                     field.push([]);
@@ -387,7 +388,7 @@
                                 canRestart = true;
                                 clearTimeout(canRestartTimeout);
                                 canRestartTimeout = undefined;
-                            }, 2000);
+                            }, 1000);
                         }
                         restartGame();
                     }
@@ -740,11 +741,11 @@
         }
         document.onkeydown = function(e) {
             e.preventDefault();
-            if (gameOver) { 
-                if (canRestart) restartGame(true);
-                return;
-            }
             e = e || window.event;
+            if (e.key === 'R' || e.key === 'r') {
+                if (gameOver && canRestart) restartGame(true);
+                else if (pause) restartGame(true);
+            }
             if (e.key === 'ArrowLeft') {
                 advancePiece(currentPiece, "left"); updateField();
             } else if (e.key === 'ArrowRight') {
