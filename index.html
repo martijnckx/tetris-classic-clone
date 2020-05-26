@@ -209,8 +209,8 @@
         const topBuffer = 2;
         const rows = 20;
         const columns = 10;
-        const maxLevel = 9;
-        const linesPerLevel = 10;
+        const maxLevel = 20;
+        const linesPerLevel = 5;
         let themeColour = "white";
         let holdingSoftDrop = false;
         let darkMode = false;
@@ -1009,7 +1009,7 @@
             if (gameloop) {
                 clearInterval(gameloop);
             }
-            gameloop = setInterval(advanceField, 50+((maxLevel-level)*100));
+            gameloop = setInterval(advanceField, 50+((maxLevel-level)*50));
         }
         setGameLoop();
     </script>
