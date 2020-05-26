@@ -24,6 +24,16 @@
             overflow: hidden;
             position: relative;
         }
+        body {
+            --theme-colour: white;
+            --text-colour: black;
+            --cell-border: 1px solid #eee;
+            --field-width: 10;
+            --field-height: 20;
+            --cell-size: 20px;
+            background: var(--theme-colour);
+            color: var(--text-colour);
+        }
         .help, .dark {
             position: fixed;
             display: flex;
@@ -74,7 +84,7 @@
             z-index: 10;
         }
         .help-modal {
-            background: white;
+            background: var(--theme-colour);
             padding: 30px;
             border-radius: 10px;
             border: 1px solid #666;
@@ -94,10 +104,6 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            --cell-border: 1px solid #eee;
-            --field-width: 10;
-            --field-height: 20;
-            --cell-size: 20px;
         }
         .game.paused > * {
             opacity: 0.3;
@@ -110,7 +116,7 @@
             position: absolute;
             height: 80px;
             width: 30px;
-            background: black;
+            background: var(--text-colour);
             top: 200px;
             left: 66px;
             opacity: 1 !important;
@@ -175,16 +181,19 @@
         .game .field .row, .game .top .next-piece-row {
             display: flex;
         }
+        .game .top .next-piece-row .next-piece-cell, .game .top .next-piece-row{
+            border-color: var(--theme-colour) !important;
+        }
         .game .field .row .cell, .game .top .next-piece-row .next-piece-cell {
             width: var(--cell-size);
             height: var(--cell-size);
             border-left: var(--cell-border);
             border-bottom: var(--cell-border);
         }
-        .game .field .row:last-child, .game .top .next-piece-row:last-child {
+        .game .field .row:last-child {
             border-top: var(--cell-border);
         }
-        .game .field .row .cell:last-child, .game .top .next-piece-row .next-piece-cell:last-child {
+        .game .field .row .cell:last-child {
             border-right: var(--cell-border);
         }
     </style>
@@ -715,10 +724,9 @@
         function toggleDark() {
             darkMode = !darkMode;
             themeColour = darkMode ? "#222" : "white";
-            modalElem.style.background = themeColour;
-            document.body.style.background = themeColour;
-            document.body.style.color = darkMode? "white" : "black";
-            gameElem.style.setProperty("--cell-border", darkMode? "1px solid #333" : "1px solid #eee");
+            document.body.style.setProperty("--cell-border", darkMode? "1px solid #333" : "1px solid #eee");
+            document.body.style.setProperty("--theme-colour", darkMode? "#222" : "white");
+            document.body.style.setProperty("--text-colour", darkMode? "white" : "black");
             updateField();
         }
         function pieceCanRotate(cells, rotationDirection) {
