@@ -127,6 +127,7 @@
             position: absolute;
             width: 150px;
             top: 200px;
+            background: none;
             left: 26px;
             font-weight: bold;
             opacity: 1 !important;
@@ -137,6 +138,21 @@
             font-weight: normal;
             font-size: 12px;
             top: 230px;
+        }
+        .game .top {
+            width: 100%;
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .game .top > div {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .game .top .next-piece {
+            flex-direction: column-reverse;
         }
         .game .score, .game .level {
             text-align: center;
@@ -156,19 +172,19 @@
             display: flex;
             flex-direction: column-reverse;
         }
-        .game .field .row {
+        .game .field .row, .game .top .next-piece-row {
             display: flex;
         }
-        .game .field .row .cell {
+        .game .field .row .cell, .game .top .next-piece-row .next-piece-cell {
             width: var(--cell-size);
             height: var(--cell-size);
             border-left: var(--cell-border);
             border-bottom: var(--cell-border);
         }
-        .game .field .row:last-child {
+        .game .field .row:last-child, .game .top .next-piece-row:last-child {
             border-top: var(--cell-border);
         }
-        .game .field .row .cell:last-child {
+        .game .field .row .cell:last-child, .game .top .next-piece-row .next-piece-cell:last-child {
             border-right: var(--cell-border);
         }
     </style>
@@ -196,12 +212,14 @@
         let level = 1;
         let pause = false;
         let gameOver = false;
+        let nextPiece = "";
         let canRestart = true;
         let canRestartTimeout = undefined;
         let currentPiece = "";
         let linesCleared = 0;
         let score = 0;
         let softDropBuffer = 0;
+        let nextPieceRowElems = undefined;
         let rowElems = undefined;
         let levelElem = undefined;
         let scoreElem = undefined;
@@ -256,13 +274,17 @@
             return Math.random().toString(36).substr(2, 9);
         };
         function updateField() {
-            if (!rowElems) {
-                rowElems = document.getElementsByClassName("row");
-            }
+            if (!rowElems) rowElems = document.getElementsByClassName("row");
+            if (!nextPieceRowElems) nextPieceRowElems = document.getElementsByClassName("next-piece-row");
             for (let row = 0; row < rows; row++) {
                 for (let column = 0; column < columns; column++) {
                     cell = field[row][column];
                     rowElems[row].children[column].style.background = cell.colour ? cell.colour : themeColour;
+                }
+            }
+            for (let row = 0; row < 2; row++) {
+                for (let column = 0; column < 4; column++) {
+                    nextPieceRowElems[1-row].children[column].style.background = nextPiece.shape[row][column] !== '0' ? nextPiece.colour : themeColour;
                 }
             }
         }
@@ -395,7 +417,9 @@
         }
         function insertRandomPiece() {
             if (pause) return;
-            insertPiece(pieces[Math.floor(Math.random() * pieces.length)].name);
+            if (!nextPiece || nextPiece.length <= 0) nextPiece = pieces[Math.floor(Math.random() * pieces.length)];
+            insertPiece(nextPiece.name);
+            nextPiece = pieces[Math.floor(Math.random() * pieces.length)];
             advancePiece(currentPiece, "down");
         }
         function restartGame(userWantsToRestartGame) {
@@ -957,8 +981,8 @@
 
         function handleVisibilityChange() {
             if (document[hidden]) {
-                console.log("(Un)paused");
-                pause = !pause;
+                console.log("Paused");
+                pause = true;
                 if (!gameElem) gameElem = document.getElementById("game");
                 if (pause) gameElem.classList.add("paused");
                 else gameElem.classList.remove("paused");
@@ -1015,8 +1039,26 @@
     </div>
     <div class="container">
         <div class="game" id="game">
-            <div class="level">Level: <span id="level">1</span></div>
-            <div class="score">Score: <span id="score">0</span></div>
+            <div class="top">
+                <div class="next-piece">
+                    <div class="next-piece-row">
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                    </div>
+                    <div class="next-piece-row">
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                        <div class="next-piece-cell"></div>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="level">Level: <span id="level">1</span></div>
+                    <div class="score">Score: <span id="score">0</span></div>
+                </div>
+            </div>
             <div class="field" id="field">
                 <div class="row">
                     <div class="cell"></div>
