@@ -387,13 +387,13 @@
             if (pause) return;
             let lines = getFullLines();
             addScoreForLines(lines.length);
-            if (!!lines.length) combo += 1;
-            else combo = 0;
             if (lines.length > 0) {
                 clear_line_audio[Math.min(combo, 3)].pause();
                 clear_line_audio[Math.min(combo, 3)].currentTime = 0;
                 clear_line_audio[Math.min(combo, 3)].play();
             }
+            if (!!lines.length) combo += 1;
+            else combo = 0;
             while (lines.length > 0) {
                 moveDownAbove(lines[0]);
                 lines = getFullLines();
