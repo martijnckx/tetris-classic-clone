@@ -428,7 +428,9 @@
             if (pause) return;
             if (!nextPiece || nextPiece.length <= 0) nextPiece = pieces[Math.floor(Math.random() * pieces.length)];
             insertPiece(nextPiece.name);
+            const prevPiece = nextPiece;
             nextPiece = pieces[Math.floor(Math.random() * pieces.length)];
+            if (nextPiece.name === prevPiece.name) nextPiece = pieces[Math.floor(Math.random() * pieces.length)];
             advancePiece(currentPiece, "down");
         }
         function restartGame(userWantsToRestartGame) {
