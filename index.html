@@ -467,7 +467,7 @@
             let solidSoundPlayed = false;
             let rotationDirection = 1;
             if (direction === 'rrotate') {
-                rotationDirection = -1;
+                rotationDirection = 3;
                 direction = 'rotate';
             }
             const cells = getCellsOfPiece(id);
@@ -873,6 +873,8 @@
                 advancePiece(currentPiece, "down"); updateField();
             } else if (e.key === 'ArrowUp') {
                 advancePiece(currentPiece, "rotate"); updateField();
+            } else if (e.key === '0') {
+                advancePiece(currentPiece, "rrotate"); updateField();
             } else if (e.key === '-') {
                 zoomLevel -= 0.1;
                 zoomLevel = Math.max(0.1, zoomLevel);
@@ -1028,6 +1030,7 @@
                 <li>Arrow Up: Rotate CW</li>
                 <li>Arrow Down: Soft drop</li>
                 <li>Space: Hard drop</li>
+                <li>0: Rotate CCW</li>
                 <li>Escape: (Un)pause</li>
                 <li>R: Restart (when paused or game over)</li>
                 <li>+: Increase game size</li>
